@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MB ULB</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid rgb(0, 0, 0);
+            padding: 8px;
+            text-align: center;
+        }
+        h1{
+            font-family: Tahoma, Geneva, Verdana, sans-serif;
+            color: rgba(0, 81, 255, 0.897);
+        }
+    </style>
+    
+</head>
+<body>
+<h1>ULB Bulk Supply Entry</h1>
+<div id="dtdrop" > 
+<label for="SupplyDate">Select Supply Date:</label>
+<select id="SupplyDate" onchange="updateDates()">
+    <option value="Today">today</option>
+    <option value="Yesterday">yesterday</option>
+</select>
+</div> 
+
+    <label for="ceSection">Select CE Section:</label>
+    <select id="ceSection" onchange="updateDivisions()">
+        <option value="">-- Select --</option>
+        <option value="1">CE-1</option>
+        <option value="2">CE-2</option>
+        <option value="3">CE-3</option>
+        <option value="4">CE-4</option>
+        <option value="5">CE-5</option>
+        <option value="6">CE-6</option>
+        <option value="7">CE-7</option>
+        <option value="8">CE-8</option>
+        <option value="9">CE-9</option>
+    </select>
+
+    <label for="division">Select Division:</label>
+    <select id="division" onchange="updateTable()">
+        <option value="">-- Select --</option>
+    </select>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ULB</th>
+                <th>Demand</th>
+                <th>Supply</th>
+                <th>Reasons</th>
+            </tr>
+        </thead>
+        <tbody id="dataTable">
+            <!-- Rows will be dynamically inserted here -->
+        </tbody>
+    </table>
+    <div>
+    <label for="Passcode">Enter your passcode:</label>
+    <input type="text" id="name" name="name" required minlength="6" maxlength="8" size="10" />
+    </div>
+
+    <div><button onclick="submitData()">Submit</button></div>
+
+    <script>
+        const scriptURL = "https://script.google.com/macros/s/AKfycbyRCbfn3Dzk9FRZcsM5PS0AOJlcUToIWYbaMJ0agf_K-sR6c4gA9jI5on4iO-_NuHVU/exec"; // Replace with your Apps Script URL
+
+    document.addEventListener("DOMContentLoaded", function () {
+    function updateDates() {
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+
+        const formatDate = (date) => {
+            return date.toISOString().split('T')[0].split('-').reverse().join('-');
+        };
+
+        document.getElementById("SupplyDate").innerHTML = `
+            <option value="Today">${formatDate(today)}</option>
+            <option value="Yesterday">${formatDate(yesterday)}</option>
+        `;
+    }
+
+    updateDates();
+});
+
+
+
+        const data = {
+            "1": {
+                "Gajwel": [
+                    { ulb: "Toopran", demand: 3.29, supply: "", reasons: "" },
+                    { ulb: "Dubbaka", demand: 3.23, supply: "", reasons: "" },
+                    { ulb: "Gajwel", demand: 8.06, supply: "", reasons: "" },
+                    { ulb: "Siddipet", demand: 21, supply: "", reasons: "" },
+                ],
+                "Medak": [
+                    { ulb: "Medak", demand: 10.07, supply: "", reasons: "" },
+                    { ulb: "Narsapur", demand: 2.50, supply: "", reasons: "" },
+                    { ulb: "Ramayampet", demand: 1.50, supply: "", reasons: "" },
+                    { ulb: "Andol_Jogipet", demand: 4.10, supply: "", reasons: "" },
+                    { ulb: "Gaddapotharam", demand: 0.93, supply: "", reasons: "" },
+                    { ulb: "Gummadidala", demand: 1.61, supply: "", reasons: "" },
+                    { ulb: "Narayankhed", demand: 2.24, supply: "", reasons: "" },
+                ],
+                "Sanga Reddy": [
+                    { ulb: "Ameenpur", demand: 0.28, supply: "", reasons: "" },
+                    { ulb: "Isnapur", demand: 2.29, supply: "", reasons: "" },
+                    { ulb: "Kohir", demand: 1.63, supply: "", reasons: "" },
+                    { ulb: "Sadasivapet", demand: 6.25, supply: "", reasons: "" },
+                    { ulb: "Sangareddy", demand: 8.62, supply: "", reasons: "" },
+                    { ulb: "Tellapur(partially)", demand: 4.10, supply: "", reasons: "" },
+                    { ulb: "Zaheerabad", demand: 8.00, supply: "", reasons: "" },
+                ]
+            },
+            "2": {
+                "Hanmakonda": [
+                    { ulb: "Warangal MC", demand: 47.50, supply: "", reasons: "" },
+                    { ulb: "Wardhannapet", demand: 1.19, supply: "", reasons: "" },
+                ],
+                "Parkal": [
+                    { ulb: "Parkal", demand: 6, supply: "", reasons: "" },
+                    { ulb: "Bhupalpally", demand: 9.73, supply: "", reasons: "" },      
+                ]
+            },            
+            "3": {
+                "Khammam": [
+                    { ulb: "Edulapuram", demand: 4.24, supply: "", reasons: "" },
+                    { ulb: "Khammam MC", demand: 25.00, supply: "", reasons: "" },
+                    { ulb: "Madhira", demand: 5.08, supply: "", reasons: "" },
+                    { ulb: "Wyra", demand: 4.27, supply: "", reasons: "" },
+                ],
+                "Kothegudem": [
+                    { ulb: "Aswaraopeta", demand: 1.89, supply: "", reasons: "" },
+                    { ulb: "Kothagudem", demand: 2.50, supply: "", reasons: "" },
+                    { ulb: "Palvancha", demand: 3.40, supply: "", reasons: "" },
+                    { ulb: "Yellandu", demand: 5.92, supply: "", reasons: "" },
+                    { ulb: "Sathupally", demand: 4.75, supply: "", reasons: "" },
+                ]
+            },
+            "4": {
+                "Gadwal": [
+                    { ulb: "Alampur", demand: 1.6, supply: "", reasons: "" },
+                    { ulb: "Gadwal", demand: 10.32, supply: "", reasons: "" },
+                    { ulb: "Ieeja", demand: 4.3, supply: "", reasons: "" },
+                    { ulb: "Waddepally", demand: 1.6, supply: "", reasons: "" },
+                ],
+                "Kollapur": [
+                    { ulb: "Achampet", demand: 5, supply: "", reasons: "" },
+                    { ulb: "Kalwakurthy", demand: 4.50, supply: "", reasons: "" },
+                    { ulb: "Kollapur", demand: 3.0, supply: "", reasons: "" },
+                    { ulb: "Nagarkurnool", demand: 4.70, supply: "", reasons: "" },
+                ],
+                "Mahabubnagar": [
+                    { ulb: "Badepally", demand: 8.24, supply: "", reasons: "" },
+                    { ulb: "Bhoothpur", demand: 1.5, supply: "", reasons: "" },
+                    { ulb: "Devarakadara", demand: 1.38, supply: "", reasons: "" },
+                    { ulb: "Mahabubnagar", demand: 10.83, supply: "", reasons: "" },
+                    { ulb: "Kosgi", demand: 2.3, supply: "", reasons: "" },
+                    { ulb: "Makthal", demand: 2.2, supply: "", reasons: "" },
+                    { ulb: "Maddur", demand: 1.44, supply: "", reasons: "" },
+                    { ulb: "Narayanapet", demand: 7.74, supply: "", reasons: "" },
+                ],
+                "Nalgonda": [
+                    { ulb: "Chityal", demand: 2.38, supply: "", reasons: "" },
+                    { ulb: "Miryalaguda", demand: 14.5, supply: "", reasons: "" },
+                    { ulb: "Nakrekal", demand: 2.4, supply: "", reasons: "" },
+                    { ulb: "Nalgonda", demand: 16, supply: "", reasons: "" },
+                    { ulb: "Mothkur", demand: 1.6, supply: "", reasons: "" },
+                ],
+                "Shadhnagar": [
+                    { ulb: "Amangal", demand: 2.5, supply: "", reasons: "" },
+                    { ulb: "Kothur", demand: 1.55, supply: "", reasons: "" },
+                    { ulb: "Shadnagar", demand: 8.5, supply: "", reasons: "" },
+                    { ulb: "Kodangal", demand: 1.6, supply: "", reasons: "" },
+                ],
+                "Suryapet": [
+                    { ulb: "Huzurnagar", demand: 3, supply: "", reasons: "" },
+                    { ulb: "Kodad", demand: 8, supply: "", reasons: "" },
+                    { ulb: "Nereducharla", demand: 1.2, supply: "", reasons: "" },
+                    { ulb: "Suryapet", demand: 19, supply: "", reasons: "" },
+                    { ulb: "Thirumalagiri", demand: 2.52, supply: "", reasons: "" },
+                ],
+                "Wanaprthy": [
+                    { ulb: "Amarchinta", demand: 1.2, supply: "", reasons: "" },
+                    { ulb: "Atmakur", demand: 1.9, supply: "", reasons: "" },
+                    { ulb: "Kothakota", demand: 2.6, supply: "", reasons: "" },
+                    { ulb: "Pebbair", demand: 1.74, supply: "", reasons: "" },
+                    { ulb: "Wanaparthy", demand: 13.5, supply: "", reasons: "" },
+                ]
+            },
+
+            "5": {
+                "Adilabad": [
+                    { ulb: "Adilabad", demand: 31.28, supply: "", reasons: "" },
+                ],
+                "Asifabad": [
+                    { ulb: "Asifabad", demand: 4.9, supply: "", reasons: "" },
+                    { ulb: "Khagaznagar", demand: 7, supply: "", reasons: "" },
+                    { ulb: "Bellampally", demand: 4.21, supply: "", reasons: "" },                    
+                ],
+                "Manchiryal": [
+                    { ulb: "Chennur", demand: 3.05, supply: "", reasons: "" },
+                    { ulb: "Kyathenpalle", demand: 2.75, supply: "", reasons: "" },
+                    { ulb: "Luxettipet", demand: 2.2, supply: "", reasons: "" },
+                    { ulb: "Manchiryal", demand: 11.25, supply: "", reasons: "" },
+                    { ulb: "Mandamarry", demand: 9.14, supply: "", reasons: "" },
+                    { ulb: "Khanapur", demand: 2.34, supply: "", reasons: "" },
+                ],
+                "Nirmal": [
+                    { ulb: "Bhainsa", demand: 9.84, supply: "", reasons: "" },
+                    { ulb: "Nirmal", demand: 18.8, supply: "", reasons: "" },
+                ]
+            },
+            "6": {
+                "Armoor": [
+                    { ulb: "Kamareddy", demand: 12.86, supply: "", reasons: "" },
+                    { ulb: "Armoor", demand: 1.49, supply: "", reasons: "" },
+                    { ulb: "Bheemgal", demand: 1.78, supply: "", reasons: "" },
+                    { ulb: "Nizamabad", demand: 3.34, supply: "", reasons: "" },
+                ],
+                "Banswada": [
+                    { ulb: "Banswada", demand: 7, supply: "", reasons: "" },
+                    { ulb: "Yellareddy", demand: 2.86, supply: "", reasons: "" },
+                    { ulb: "Bodhan", demand: 5, supply: "", reasons: "" },
+                ],
+            },
+            "7": {
+                "Bhongir_Intra": [
+                    { ulb: "Alair", demand: 1.72, supply: "", reasons: "" },
+                    { ulb: "Bhongir", demand: 0.4, supply: "", reasons: "" },
+                    { ulb: "Yadagirigutta", demand: 1.2, supply: "", reasons: "" },
+                ],
+                "Chouttuppal": [
+                    { ulb: "Chouttuppal", demand: 2.5, supply: "", reasons: "" },
+                    { ulb: "Pochampalle", demand: 1.32, supply: "", reasons: "" },
+                    { ulb: "Chandur", demand: 1.6, supply: "", reasons: "" },
+                    { ulb: "Devarakonda", demand: 4.9, supply: "", reasons: "" },
+                    { ulb: "Haliya", demand: 2.21, supply: "", reasons: "" },
+                ],
+                "Jangaon": [
+                    { ulb: "Jangaon", demand: 1.45, supply: "", reasons: "" },
+                    { ulb: "Station_Ghanpur", demand: 3.05, supply: "", reasons: "" },
+                    { ulb: "Cherial", demand: 1.61, supply: "", reasons: "" },
+                ],
+                "Mahabubabad": [
+                    { ulb: "Dornakal    ", demand: 1.57, supply: "", reasons: "" },
+                    { ulb: "Kesamudram", demand: 1.92, supply: "", reasons: "" },
+                    { ulb: "Mahabubabad", demand: 12.58, supply: "", reasons: "" },
+                    { ulb: "Maripeda", demand: 2.2, supply: "", reasons: "" },
+                    { ulb: "Thorrur", demand: 2.05, supply: "", reasons: "" },
+                    { ulb: "Narsampet", demand: 8.08, supply: "", reasons: "" },
+                ]
+                },
+            "8": {
+                "Huzurabad": [
+                    { ulb: "Huzurabad", demand: 7.31, supply: "", reasons: "" },
+                    { ulb: "Jammikunta", demand: 6.7, supply: "", reasons: "" },
+                    { ulb: "Karimnagar", demand: 32.79, supply: "", reasons: "" },
+                    { ulb: "Kothapalli", demand: 1.31, supply: "", reasons: "" },
+                    { ulb: "Husnabad", demand: 3.49, supply: "", reasons: "" },
+                ],
+                "Jagtial": [
+                    { ulb: "Dharmapuri", demand: 2.93, supply: "", reasons: "" },
+                    { ulb: "Jagtial", demand: 18.16, supply: "", reasons: "" },
+                    { ulb: "Korutla", demand: 11.49, supply: "", reasons: "" },
+                    { ulb: "Metpally", demand: 9.27, supply: "", reasons: "" },
+                    { ulb: "Raikal", demand: 1.58, supply: "", reasons: "" },
+                ],
+                "Peddapalli": [
+                    { ulb: "Manthani", demand: 1.81, supply: "", reasons: "" },
+                    { ulb: "Peddapalli", demand: 8.2, supply: "", reasons: "" },
+                    { ulb: "Ramagundam", demand: 40, supply: "", reasons: "" },
+                    { ulb: "Sulthanabad", demand: 2.15, supply: "", reasons: "" },
+                ],
+                "Siricilla": [
+                    { ulb: "Choppadandi", demand: 1.97, supply: "", reasons: "" },
+                    { ulb: "Siricilla", demand: 9.6, supply: "", reasons: "" },
+                    { ulb: "Vemulwada", demand: 8.41, supply: "", reasons: "" },
+                ],
+            },
+            "9": {
+                "Hyderabad": [
+                    { ulb: "Dhammaiguda", demand: 1.02, supply: "", reasons: "" },
+                    { ulb: "Dundigal", demand: 1.26, supply: "", reasons: "" },
+                    { ulb: "Ghatkesar", demand: 3.15, supply: "", reasons: "" },
+                    { ulb: "Gundla_pochampally", demand: 0.5, supply: "", reasons: "" },
+                    { ulb: "Medchal", demand: 5.51, supply: "", reasons: "" },
+                    { ulb: "Nagaram", demand: 0.25, supply: "", reasons: "" },
+                    { ulb: "Thumkunta", demand: 1.01, supply: "", reasons: "" },
+                    { ulb: "Adibatla", demand: 1.50, supply: "", reasons: "" },
+                    { ulb: "Ibrahimpatnam", demand: 4.10, supply: "", reasons: "" },
+                    { ulb: "Pedda_Amberpet", demand: 0.5, supply: "", reasons: "" },
+                    { ulb: "Shamshabad", demand: 1.84, supply: "", reasons: "" },
+                    { ulb: "Thukkuguda", demand: 1.01, supply: "", reasons: "" },
+                    { ulb: "Turkayamjal", demand: 0.09, supply: "", reasons: "" },
+                ],
+                "Vikarabad": [
+                    { ulb: "Chevella", demand: 2.51, supply: "", reasons: "" },
+                    { ulb: "Moinabad", demand: 3.61, supply: "", reasons: "" },
+                    { ulb: "Narsingi", demand: 0.49 , supply: "", reasons: "" },
+                    { ulb: "Shankerpally", demand: 1.5, supply: "", reasons: "" },
+                    { ulb: "Pargi", demand: 2.2, supply: "", reasons: "" },
+                    { ulb: "Tandur", demand: 9, supply: "", reasons: "" },
+                    { ulb: "Vikarabad", demand: 9.8, supply: "", reasons: "" },
+                ]
+            }
+        };
+
+        function updateDivisions() {
+            let ceSection = document.getElementById("ceSection").value;
+            let divisionDropdown = document.getElementById("division");
+
+            divisionDropdown.innerHTML = `<option value="">-- Select --</option>`;
+
+            if (ceSection && data[ceSection]) {
+                Object.keys(data[ceSection]).forEach(division => {
+                    let option = document.createElement("option");
+                    option.value = division;
+                    option.textContent = division;
+                    divisionDropdown.appendChild(option);
+                });
+            }
+            
+            updateTable();
+        }
+
+        function updateTable() {
+            let ceSection = document.getElementById("ceSection").value;
+            let division = document.getElementById("division").value;
+            let tableBody = document.getElementById("dataTable");
+
+            tableBody.innerHTML = "";
+
+            if (ceSection && division && data[ceSection][division]) {
+                data[ceSection][division].forEach(row => {
+                    let tr = document.createElement("tr");
+
+                    tr.innerHTML = `
+                        <td>${row.ulb}</td>
+                        <td>${row.demand}</td>
+                        <td><input type="text" value="${row.supply}"></td>
+                        <td><input type="text" value="${row.reasons}"></td>
+                    `;
+
+                    tableBody.appendChild(tr);
+                });
+            }
+        }
+
+
+            
+    function submitData() {
+        let supplyDate = document.getElementById("SupplyDate").value;
+        let ceSection = document.getElementById("ceSection").value;
+        let division = document.getElementById("division").value;
+        let passcode = document.getElementById("name").value;
+        let table = document.getElementById("dataTable");
+        let rows = table.getElementsByTagName("tr");
+
+        let data = [];
+
+        for (let i = 0; i < rows.length; i++) {
+            let cells = rows[i].getElementsByTagName("td");
+            if (cells.length > 0) {
+                let ulb = cells[0].innerText;
+                let demand = cells[1].innerText;
+                let supply = cells[2].querySelector("input")?.value || "";
+                let reasons = cells[3].querySelector("input")?.value || "";
+
+                data.push({
+                    date: supplyDate,
+                    ceSection: ceSection,
+                    division: division,
+                    ulb: ulb,
+                    demand: demand,
+                    supply: supply,
+                    reasons: reasons,
+                    passcode: passcode
+                });
+            }
+        }
+
+        fetch("https://script.google.com/macros/s/AKfycbyRCbfn3Dzk9FRZcsM5PS0AOJlcUToIWYbaMJ0agf_K-sR6c4gA9jI5on4iO-_NuHVU/exec", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+             body: JSON.stringify(data)
+                })
+            .then(response => response.text())
+            .then(result => console.log("Server Response:", result))
+            .catch(error => console.error("Error:", error));
+
+    }
+
+    </script>
+
+</body>
+</html>
